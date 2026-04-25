@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	lessons.Ifelse()
+	lessons.ForExample()
 }
