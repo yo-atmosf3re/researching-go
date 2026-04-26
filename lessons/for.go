@@ -1,34 +1,30 @@
 package lessons
 
 import (
-	"fmt"
 	"math/rand"
+	"researching-go/pkg/logger"
 	"time"
 )
-
-func pt(value ...any) (n int, err error) {
-	return fmt.Println(value...)
-}
 
 func ForExample() {
 	index := 0
 	for ; index <= 5; index++ {
-		pt("first", index)
+		logger.Pt("first", index)
 	}
-	pt(index)
+	logger.Pt(index)
 }
 
 func WithRand() {
 	randomValue := rand.Intn(10)
 
 	for i := 0; i <= randomValue; i++ {
-		pt("second", i)
+		logger.Pt("second", i)
 	}
 }
 
 func SleepExample() {
 	for i := 0; i <= 5; i++ {
-		pt("third", i)
+		logger.Pt("third", i)
 		time.Sleep(1 * time.Minute)
 	}
 }
@@ -37,15 +33,15 @@ func Infinity() {
 	score := 0
 	randValue := rand.Intn(20)
 	for {
-		pt("before: ", score)
-		pt("rand value: ", randValue)
+		logger.Pt("before: ", score)
+		logger.Pt("rand value: ", randValue)
 		if randValue == score {
-			pt("end")
+			logger.Pt("end")
 			break
 		}
 		score++
-		pt("after: ", score)
+		logger.Pt("after: ", score)
 		time.Sleep(500 * time.Millisecond)
 	}
-	pt("total: ", score)
+	logger.Pt("total: ", score)
 }

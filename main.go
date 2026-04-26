@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	lessons.Infinity()
+	lessons.FuncExample()
 }
