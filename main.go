@@ -1,9 +1,7 @@
 package main
 
-import (
-	"researching-go/lessons"
-)
+import "researching-go/lessons"
 
 func main() {
-	lessons.GcExample()
+	lessons.SelectExample()
 }
