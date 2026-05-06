@@ -1,7 +1,7 @@
 package main
 
-import "researching-go/lessons"
+import "researching-go/lessons/concurrency"
 
 func main() {
-	lessons.RwMutexExample()
+	concurrency.ConcurrencyExample()
 }
