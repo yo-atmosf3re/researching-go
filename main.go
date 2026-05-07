@@ -1,7 +1,7 @@
 package main
 
-import "researching-go/lessons/concurrency"
+import "researching-go/lessons/practice"
 
 func main() {
-	concurrency.ConcurrencyExample()
+	practice.PingPongExample()
 }
