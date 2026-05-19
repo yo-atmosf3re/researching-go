@@ -1,7 +1,9 @@
 package main
 
-import "researching-go/backend"
+import (
+	"researching-go/lessons/practice"
+)
 
 func main() {
-	backend.FirstServerExample()
+	practice.IntegerExample()
 }
