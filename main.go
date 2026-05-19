@@ -1,9 +1,9 @@
 package main
 
 import (
-	"researching-go/lessons/practice"
+	"researching-go/backend"
 )
 
 func main() {
-	practice.IntegerExample()
+	backend.BodyHttpRequestExample()
 }
