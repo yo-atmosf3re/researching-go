@@ -45,7 +45,6 @@ func handleSaveBalance(w http.ResponseWriter, r *http.Request) {
 	httpRequestBody, err := io.ReadAll(r.Body)
 	if err != nil {
 		logger.Ptc("during reading body error", err.Error())
-		logger.Ptc("during reading body error", err.Error())
 		return
 	}
 	httpRequestBodyString := string(httpRequestBody)       // convert byte[] to string
