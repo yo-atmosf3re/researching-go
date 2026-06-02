@@ -6,19 +6,21 @@ import (
 	"researching-go/pkg/logger"
 	"strconv"
 	"sync"
-	"sync/atomic"
 	"time"
 )
 
-var money = atomic.Int64{} // handler it is function inside goroutine, so atomic should be used + money it is variable which using in different http handle function, mtx is expected
-var bank = atomic.Int64{}
+// var money = atomic.Int64{} // handler it is function inside goroutine, so atomic should be used + money it is variable which using in different http handle function, mtx is expected
+// var bank = atomic.Int64{}
+var money = 1000 // second example without atomic, because we used mutex for work with variables
+var bank = 0
 var mtx sync.Mutex // declare mutex can outside functions globally, e.g. near other variables, because we can't receive mtx as argument in http handle function
 
-func handlePayment(w http.ResponseWriter, r *http.Request) {
+func handlePayment(_ http.ResponseWriter, r *http.Request) {
 	rBody, err := io.ReadAll(r.Body)
 	logger.Ptc("body read", string(rBody))
 	if err != nil {
-		logger.Ptc("during reading body error", err.Error())
+		msg := "during reading body error" + err.Error()
+		logger.Ptc(msg)
 		return
 	}
 
@@ -30,18 +32,18 @@ func handlePayment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	mtx.Lock()
-	if money.Load()-int64(paymentAmount) >= 0 {
+	if money-paymentAmount >= 0 {
 		time.Sleep(3 * time.Second)
-		money.Add(int64(-paymentAmount))
+		money = -paymentAmount
 	} else {
 		logger.Ptc("payment: is not enough money")
 	}
-	logger.Ptc("money", money.Load())
+	logger.Ptc("money", money)
 	mtx.Unlock()
 
 }
 
-func handleSaveBalance(w http.ResponseWriter, r *http.Request) {
+func handleSaveBalance(_ http.ResponseWriter, r *http.Request) {
 	httpRequestBody, err := io.ReadAll(r.Body)
 	if err != nil {
 		logger.Ptc("during reading body error", err.Error())
@@ -55,11 +57,11 @@ func handleSaveBalance(w http.ResponseWriter, r *http.Request) {
 	}
 
 	mtx.Lock()
-	if money.Load()-int64(saveAmount) >= 0 {
+	if money-saveAmount >= 0 {
 		time.Sleep(3 * time.Second)
-		money.Add(int64(-saveAmount)) // convert int to int64 for atomic
-		bank.Add(int64(saveAmount))
-		logger.Ptc("money :", money.Load(), "bank :", bank.Load())
+		money = -saveAmount // convert int to int64 for atomic
+		bank = saveAmount
+		logger.Ptc("money :", money, "bank :", bank)
 	} else {
 		logger.Ptc("save balance: insufficient funds")
 	}
@@ -67,7 +69,6 @@ func handleSaveBalance(w http.ResponseWriter, r *http.Request) {
 }
 
 func run() {
-	money.Add(50)
 	http.HandleFunc("/pay", handlePayment)
 	http.HandleFunc("/save", handleSaveBalance)
 	logger.Ptc("starting server")
