@@ -1,9 +1,9 @@
 package main
 
 import (
-	"researching-go/backend"
+	"researching-go/practice"
 )
 
 func main() {
-	backend.BodyHttpRequestExample()
+	practice.RememberingMedium()
 }
