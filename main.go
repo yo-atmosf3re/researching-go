@@ -1,9 +1,7 @@
 package main
 
-import (
-	"researching-go/practice"
-)
+import "researching-go/practice"
 
 func main() {
-	practice.RememberingMedium()
+	practice.RememberingMediumPlus()
 }
