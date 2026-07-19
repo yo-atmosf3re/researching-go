@@ -48,33 +48,43 @@ func RememberingMediumPlus() {
 	}
 
 	logsCh := make(chan []Metric)
+	metricCh := make(chan Metric, len(collectors))
 	var batch []Metric
-
 	ctx, cancel := context.WithCancel(context.Background())
-	//var mtx sync.Mutex
+
 	for _, collector := range collectors {
 		select {
 		case <-ctx.Done():
 			logger.Ptc("context is done")
 			return
 		default:
-			go func() {
-				metric, err := collector.Collect()
+			go func(c Collector) {
+				metric, err := c.Collect()
 				if err != nil {
 					return
 				}
-				//mtx.Lock()
-				batch = append(batch, metric)
-				//mtx.Unlock()
-			}()
+				metricCh <- metric
+			}(collector)
 		}
 	}
 
-	time.Sleep(1 * time.Second)
-	cancel()
+	timeout := time.After(1 * time.Second)
+
+	for {
+		select {
+		case metric := <-metricCh:
+			batch = append(batch, metric)
+		case <-timeout:
+			goto endOfLoop
+		}
+	}
+endOfLoop:
+
+	defer cancel()
 	go func() {
 		logsCh <- batch
 		close(logsCh)
+		close(metricCh)
 	}()
 
 	for log := range logsCh {
