@@ -42,7 +42,7 @@ func handlerWithEmptyPattern(w http.ResponseWriter, r *http.Request) {
 func FirstServerExample() {
 	port := ":9091"
 	http.HandleFunc("/default", defaultHandler) // second arg - handler, some function, which allows response writer and request reader, more details later, first arg - it is endpoint, e.g. "/default", "/pay" etc.
-	http.HandleFunc("/pay", payHandler)
+	http.HandleFunc("/payment", payHandler)
 	http.HandleFunc("/", handlerWithEmptyPattern) // "/" - root endpoint
 	logger.Ptc("starting server on port ", port)
 	err := http.ListenAndServe(port, nil) // start server on specified port in first arg, second arg - handler, e.g. function defaultHandler above
