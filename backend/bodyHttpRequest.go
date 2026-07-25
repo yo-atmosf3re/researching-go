@@ -8,7 +8,7 @@ import (
 	"sync"
 )
 
-func responseWriter(w http.ResponseWriter, messages []string) error {
+func ResponseWriter(w http.ResponseWriter, messages []string) error {
 	var msg string
 	for i, message := range messages {
 		msg += message
@@ -37,7 +37,7 @@ func handlePayment(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError) // easy way type status code response with help WriteHeader method
 		// WriteHeader should to call before Write method, else status code response will be 200
-		err = responseWriter(w, []string{"during reading body error", err.Error()})
+		err = ResponseWriter(w, []string{"during reading body error", err.Error()})
 		if err != nil {
 			logger.Ptc("fail to write HTTP response: ", err)
 		}
@@ -48,7 +48,7 @@ func handlePayment(w http.ResponseWriter, r *http.Request) {
 	paymentAmount, err := strconv.Atoi(rBodyString)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		err = responseWriter(w, []string{"during parsing payment amount occurred error, maybe payment amount is not integer.", err.Error()})
+		err = ResponseWriter(w, []string{"during parsing payment amount occurred error, maybe payment amount is not integer.", err.Error()})
 		if err != nil {
 			logger.Ptc("fail to write HTTP response: ", err)
 		}
@@ -58,14 +58,14 @@ func handlePayment(w http.ResponseWriter, r *http.Request) {
 	mtx.Lock()
 	defer mtx.Unlock()
 	if money-paymentAmount < 0 {
-		err := responseWriter(w, []string{"insufficient funds. balance:", strconv.Itoa(money)})
+		err := ResponseWriter(w, []string{"insufficient funds. balance:", strconv.Itoa(money)})
 		if err != nil {
 			logger.Ptc("fail to write HTTP response: ", err)
 		}
 		return
 	}
 	money -= paymentAmount
-	err = responseWriter(w, []string{"payment is success. balance:", strconv.Itoa(money)})
+	err = ResponseWriter(w, []string{"payment is success. balance:", strconv.Itoa(money)})
 	if err != nil {
 		logger.Ptc("fail to write HTTP response: ", err)
 	}
@@ -103,7 +103,7 @@ func handleSaveBalance(w http.ResponseWriter, r *http.Request) {
 	mtx.Lock()
 	defer mtx.Unlock()
 	if money-saveAmount < 0 {
-		err := responseWriter(w, []string{"insufficient funds for save balance. balance:", strconv.Itoa(money), "bank:", strconv.Itoa(bank)})
+		err := ResponseWriter(w, []string{"insufficient funds for save balance. balance:", strconv.Itoa(money), "bank:", strconv.Itoa(bank)})
 		if err != nil {
 			logger.Ptc("fail to write HTTP response: ", err)
 		}
@@ -111,7 +111,7 @@ func handleSaveBalance(w http.ResponseWriter, r *http.Request) {
 	}
 	money -= saveAmount
 	bank += saveAmount
-	err = responseWriter(w, []string{"money:", strconv.Itoa(money), "bank:", strconv.Itoa(bank)})
+	err = ResponseWriter(w, []string{"money:", strconv.Itoa(money), "bank:", strconv.Itoa(bank)})
 	if err != nil {
 		logger.Ptc("fail to write HTTP response: ", err)
 	}
