@@ -28,6 +28,10 @@ var mtx sync.Mutex // declare mutex can outside functions globally, e.g. near ot
 
 func handlePayment(w http.ResponseWriter, r *http.Request) {
 	//r.Header - contains headers of request/response, client or server
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
 	rBody, err := io.ReadAll(r.Body)
 	logger.Ptc("body read", string(rBody))
 	if err != nil {
@@ -68,6 +72,10 @@ func handlePayment(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleSaveBalance(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
 	httpRequestBody, err := io.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
