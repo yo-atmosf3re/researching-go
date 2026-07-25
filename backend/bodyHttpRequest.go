@@ -119,8 +119,8 @@ func handleSaveBalance(w http.ResponseWriter, r *http.Request) {
 }
 
 func run() {
-	http.HandleFunc("/pay", handlePayment)
-	http.HandleFunc("/save", handleSaveBalance)
+	//http.HandleFunc("/pay", handlePayment)
+	//http.HandleFunc("/saveBalance", handleSaveBalance)
 	logger.Ptc("starting server")
 	err := http.ListenAndServe(":9091", nil)
 	if err != nil {
