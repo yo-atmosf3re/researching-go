@@ -76,7 +76,7 @@ func simplePaymentHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func SimplePaymentModuleSetup() {
-	http.HandleFunc("/pay", simplePaymentHandler)
+	//http.HandleFunc("/pay", simplePaymentHandler)
 
 	if err := http.ListenAndServe(":9091", nil); err != nil { // environment err variable only inside "if"
 		logger.Ptc("error starting server")
