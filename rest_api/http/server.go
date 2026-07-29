@@ -16,7 +16,6 @@ func NewHTTPHServer(httpHandler *HTTPHandlers) *HTTPServer {
 	}
 }
 
-// ssdыыыыыыыыыы
 func (s *HTTPServer) StartServer() error {
 	router := mux.NewRouter()
 
