@@ -2,7 +2,10 @@ module researching-go
 
 go 1.26.2
 
-require github.com/k0kubun/pp/v3 v3.5.1
+require (
+	github.com/gorilla/mux v1.8.1
+	github.com/k0kubun/pp/v3 v3.5.1
+)
 
 require (
 	github.com/mattn/go-colorable v0.1.14 // indirect

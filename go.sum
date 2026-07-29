@@ -1,3 +1,5 @@
+github.com/gorilla/mux v1.8.1 h1:TuBL49tXwgrFYWhqrNgrUNEY92u81SPhu7sTdzQEiWY=
+github.com/gorilla/mux v1.8.1/go.mod h1:AKf9I4AEqPTmMytcMc0KkNouC66V3BtZ4qD5fmWSiMQ=
 github.com/k0kubun/pp/v3 v3.5.1 h1:fS8Xt0MWVVSiKwfXeIdE0WJlktdA87/gt0Hs0+j2R2s=
 github.com/k0kubun/pp/v3 v3.5.1/go.mod h1:s7qPOSp65uuilpprLJs2yDi9DNd7JGyWJPtPvDFpG9w=
 github.com/mattn/go-colorable v0.1.14 h1:9A9LHSqF/7dyVVX6g0U9cwm9pG3kP9gSzcuIPHPsaIE=
