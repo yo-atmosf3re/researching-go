@@ -1,8 +1,10 @@
 package http
 
 import (
+	"encoding/json"
 	"net/http"
 	"researching-go/rest_api/todo"
+	"time"
 )
 
 type HTTPHandlers struct {
@@ -27,7 +29,25 @@ failed:
   - response body: JSON with error + time
 */
 func (h *HTTPHandlers) HandleCreateTask(w http.ResponseWriter, r *http.Request) {
+	var taskDTO TaskDTO
+	if err := json.NewDecoder(r.Body).Decode(&taskDTO); err != nil {
+		errorDTO := ErrorDTO{
+			Message: err.Error(),
+			Time:    time.Now(),
+		}
+		http.Error(w, errorDTO.ToString(), http.StatusBadRequest)
+		return
+	}
 
+	if err := taskDTO.ValidateForCreate(); err != nil {
+		errorDTO := ErrorDTO{
+			Message: err.Error(),
+			Time:    time.Now(),
+		}
+		http.Error(w, errorDTO.ToString(), http.StatusBadRequest)
+	}
+
+	todoTask := todo.NewTask(taskDTO.Title, taskDTO.Description)
 }
 
 /*
