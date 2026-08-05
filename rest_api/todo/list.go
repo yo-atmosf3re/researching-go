@@ -18,6 +18,14 @@ func (l *List) AddTask(task Task) error {
 	return nil
 }
 
+func (l *List) GetTask(title string) (Task, error) {
+	task, ok := l.tasks[title]
+	if !ok {
+		return Task{}, ErrTaskNotFound
+	}
+	return task, nil
+}
+
 func (l *List) ListTasks() map[string]Task {
 	tmp := make(map[string]Task, len(l.tasks))
 	for k, v := range l.tasks {

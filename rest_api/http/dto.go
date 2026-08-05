@@ -34,3 +34,10 @@ func (e ErrorDTO) ToString() string {
 	}
 	return string(b)
 }
+
+func CreateErrorDTO(message string) ErrorDTO {
+	return ErrorDTO{
+		Message: message,
+		Time:    time.Now(),
+	}
+}

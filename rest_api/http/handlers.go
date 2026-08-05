@@ -6,7 +6,8 @@ import (
 	"net/http"
 	"researching-go/pkg/logger"
 	"researching-go/rest_api/todo"
-	"time"
+
+	"github.com/gorilla/mux"
 )
 
 type HTTPHandlers struct {
@@ -33,29 +34,20 @@ failed:
 func (h *HTTPHandlers) HandleCreateTask(w http.ResponseWriter, r *http.Request) {
 	var taskDTO TaskDTO
 	if err := json.NewDecoder(r.Body).Decode(&taskDTO); err != nil {
-		errorDTO := ErrorDTO{
-			Message: err.Error(),
-			Time:    time.Now(),
-		}
-		http.Error(w, errorDTO.ToString(), http.StatusBadRequest)
+		errDTO := CreateErrorDTO(err.Error())
+		http.Error(w, errDTO.ToString(), http.StatusBadRequest)
 		return
 	}
 
 	if err := taskDTO.ValidateForCreate(); err != nil {
-		errorDTO := ErrorDTO{
-			Message: err.Error(),
-			Time:    time.Now(),
-		}
-		http.Error(w, errorDTO.ToString(), http.StatusBadRequest)
+		errDTO := CreateErrorDTO(err.Error())
+		http.Error(w, errDTO.ToString(), http.StatusBadRequest)
 		return
 	}
 
 	todoTask := todo.NewTask(taskDTO.Title, taskDTO.Description)
 	if err := h.todolist.AddTask(todoTask); err != nil {
-		errDTO := ErrorDTO{
-			Message: err.Error(),
-			Time:    time.Now(),
-		}
+		errDTO := CreateErrorDTO(err.Error())
 		if errors.Is(err, todo.ErrTaskAlreadyExist) {
 			http.Error(w, errDTO.ToString(), http.StatusBadRequest)
 		} else {
@@ -72,6 +64,7 @@ func (h *HTTPHandlers) HandleCreateTask(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusCreated)
 	if _, err := w.Write(b); err != nil {
 		logger.Ptc("failed to write http response, ", err)
+		return
 	}
 }
 
@@ -89,7 +82,28 @@ failed:
   - response body: JSON with error + time
 */
 func (h *HTTPHandlers) HandleGetTask(w http.ResponseWriter, r *http.Request) {
+	title := mux.Vars(r)["title"]
+	task, err := h.todolist.GetTask(title)
+	if err != nil {
+		errDTO := CreateErrorDTO(err.Error())
+		if errors.Is(err, todo.ErrTaskNotFound) {
+			http.Error(w, errDTO.ToString(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
 
+	b, err := json.MarshalIndent(task, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	if _, err := w.Write(b); err != nil {
+		logger.Ptc("failed to write http response, ", err)
+		return
+	}
 }
 
 /*
