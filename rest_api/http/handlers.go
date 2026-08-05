@@ -2,7 +2,9 @@ package http
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
+	"researching-go/pkg/logger"
 	"researching-go/rest_api/todo"
 	"time"
 )
@@ -45,9 +47,32 @@ func (h *HTTPHandlers) HandleCreateTask(w http.ResponseWriter, r *http.Request) 
 			Time:    time.Now(),
 		}
 		http.Error(w, errorDTO.ToString(), http.StatusBadRequest)
+		return
 	}
 
 	todoTask := todo.NewTask(taskDTO.Title, taskDTO.Description)
+	if err := h.todolist.AddTask(todoTask); err != nil {
+		errDTO := ErrorDTO{
+			Message: err.Error(),
+			Time:    time.Now(),
+		}
+		if errors.Is(err, todo.ErrTaskAlreadyExist) {
+			http.Error(w, errDTO.ToString(), http.StatusBadRequest)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	b, err := json.MarshalIndent(h.todolist, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	if _, err := w.Write(b); err != nil {
+		logger.Ptc("failed to write http response, ", err)
+	}
 }
 
 /*
