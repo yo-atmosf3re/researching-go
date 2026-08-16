@@ -34,21 +34,31 @@ func (l *List) ListTasks() map[string]Task {
 	return tmp
 }
 
-func (l *List) ListNotCompletedTasks() map[string]Task {
-	notCompletedTasks := make(map[string]Task)
+func (l *List) ListUncompletedTasks() map[string]Task {
+	uncompletedTasks := make(map[string]Task)
 	for title, task := range l.tasks {
 		if !task.Completed {
-			notCompletedTasks[title] = task
+			uncompletedTasks[title] = task
 		}
 	}
-	return notCompletedTasks
+	return uncompletedTasks
 }
 
 func (l *List) CompleteTask(title string) error {
 	task, ok := l.tasks[title]
 	if !ok {
 		return ErrTaskNotFound
+	}
+	task.Complete()
 
+	l.tasks[title] = task
+	return nil
+}
+
+func (l *List) UncompleteTask(title string) error {
+	task, ok := l.tasks[title]
+	if !ok {
+		return ErrTaskNotFound
 	}
 	task.Complete()
 

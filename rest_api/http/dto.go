@@ -6,6 +6,10 @@ import (
 	"time"
 )
 
+type CompleteTaskDTO struct {
+	Complete bool
+}
+
 // DTO == data transfer object, e.g. for receiving data from request
 type TaskDTO struct {
 	Title       string
