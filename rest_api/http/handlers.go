@@ -198,6 +198,19 @@ func (h *HTTPHandlers) HandleCompleteTask(w http.ResponseWriter, r *http.Request
 			}
 			return
 		}
+	} else {
+		if err := h.todolist.IncompleteTask(title); err != nil {
+			errDTO := ErrorDTO{
+				Message: err.Error(),
+				Time:    time.Now(),
+			}
+			if errors.Is(err, todo.ErrTaskNotFound) {
+				http.Error(w, errDTO.ToString(), http.StatusNotFound)
+			} else {
+				http.Error(w, errDTO.ToString(), http.StatusInternalServerError)
+			}
+			return
+		}
 	}
 }
 
@@ -215,5 +228,17 @@ failed:
   - response body: JSON with error + time
 */
 func (h *HTTPHandlers) HandleDeleteTask(w http.ResponseWriter, r *http.Request) {
-
+	title := mux.Vars(r)["title"]
+	if err := h.todolist.DeleteTask(title); err != nil {
+		errDTO := ErrorDTO{
+			Message: err.Error(),
+			Time:    time.Now(),
+		}
+		if errors.Is(err, todo.ErrTaskNotFound) {
+			http.Error(w, errDTO.ToString(), http.StatusNotFound)
+		} else {
+			http.Error(w, errDTO.ToString(), http.StatusInternalServerError)
+		}
+		return
+	}
 }

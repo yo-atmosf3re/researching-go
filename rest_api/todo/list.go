@@ -55,12 +55,12 @@ func (l *List) CompleteTask(title string) error {
 	return nil
 }
 
-func (l *List) UncompleteTask(title string) error {
+func (l *List) IncompleteTask(title string) error {
 	task, ok := l.tasks[title]
 	if !ok {
 		return ErrTaskNotFound
 	}
-	task.Complete()
+	task.Incomplete()
 
 	l.tasks[title] = task
 	return nil
