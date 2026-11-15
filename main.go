@@ -1,7 +1,8 @@
 package main
 
-import "researching-go/backend"
+import "researching-go/practice"
 
 func main() {
-	backend.QueryResearch()
+	//backend.QueryResearch()
+	practice.RememberingAgain()
 }
