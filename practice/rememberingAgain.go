@@ -181,6 +181,8 @@ func contextExampleAgain() {
 	fmt.Println("Role a rootCtx: ", role, ok)
 }
 
+Сделать гит пул и доделать задачи с гугл аи
+
 func RememberingAgain() {
 	//startWorker()
 	//simpleWgWait()
