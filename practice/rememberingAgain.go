@@ -181,6 +181,67 @@ func contextExampleAgain() {
 	fmt.Println("Role a rootCtx: ", role, ok)
 }
 
+var ErrInvalidTask = errors.New("invalid task")
+
+type Stats struct {
+	mu        sync.Mutex
+	Processed int
+	History   []string
+}
+
+func (s Stats) Record(task string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.Processed++
+	s.History = append(s.History, task)
+}
+
+func processTask(ctx context.Context, task string) error {
+	if task == "" {
+		return fmt.Errorf("validation: %w", ErrInvalidTask)
+	}
+
+	select {
+	case <-time.After(100 * time.Millisecond):
+		return nil
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+}
+
+func hardTask() {
+	ctx, cancel := context.WithTimeout(context.Background(), 2000*time.Millisecond)
+	defer cancel()
+
+	tasks := []string{"job_1", "", "job_2", "job_3"}
+	stats := &Stats{}
+	errCh := make(chan error)
+
+	wg := &sync.WaitGroup{}
+	for _, t := range tasks {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			err := processTask(ctx, t)
+			if err != nil {
+				if errors.Is(err, ErrInvalidTask) {
+					logger.Ptc("Пропущена пустая задача")
+					return
+				}
+				errCh <- err
+				return
+			}
+			stats.Record(t)
+		}()
+	}
+	wg.Wait()
+
+	close(errCh)
+	for err := range errCh {
+		logger.Ptc("Ошибка выполнения: ", err)
+	}
+}
+
 func RememberingAgain() {
 	//startWorker()
 	//simpleWgWait()
@@ -189,5 +250,6 @@ func RememberingAgain() {
 	//contextExample()
 	//anyTypeExample()
 	//genericExample()
-	contextExampleAgain()
+	//contextExampleAgain()
+	hardTask()
 }
