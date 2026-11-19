@@ -1,7 +1,10 @@
 package todo
 
+import "sync"
+
 type List struct {
 	tasks map[string]Task
+	mtx   sync.RWMutex
 }
 
 func NewList() *List {

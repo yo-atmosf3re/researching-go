@@ -189,7 +189,7 @@ type Stats struct {
 	History   []string
 }
 
-func (s Stats) Record(task string) {
+func (s *Stats) Record(task string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.Processed++
