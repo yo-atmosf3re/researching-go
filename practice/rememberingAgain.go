@@ -215,7 +215,7 @@ func hardTask() {
 
 	tasks := []string{"job_1", "", "job_2", "job_3"}
 	stats := &Stats{}
-	errCh := make(chan error)
+	errCh := make(chan error, len(tasks))
 
 	wg := &sync.WaitGroup{}
 	for _, t := range tasks {
@@ -224,10 +224,10 @@ func hardTask() {
 			defer wg.Done()
 			err := processTask(ctx, t)
 			if err != nil {
-				if errors.Is(err, ErrInvalidTask) {
-					logger.Ptc("Пропущена пустая задача")
-					return
-				}
+				//if errors.Is(err, ErrInvalidTask) {
+				//	logger.Ptc("Пропущена пустая задача")
+				//	return
+				//}
 				errCh <- err
 				return
 			}
@@ -235,7 +235,6 @@ func hardTask() {
 		}()
 	}
 	wg.Wait()
-
 	close(errCh)
 	for err := range errCh {
 		logger.Ptc("Ошибка выполнения: ", err)
