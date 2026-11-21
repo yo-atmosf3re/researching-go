@@ -241,6 +241,64 @@ func hardTask() {
 	}
 }
 
+var ErrNotFound = errors.New("not found")
+
+type Repository[K any, V any] interface {
+	Save(id K, entity V)
+	Get(id K) (V, error)
+}
+
+type MemoryRepo[K any, V any] struct {
+	mu   sync.RWMutex
+	data map[K]V
+}
+
+func NewMemoryRepo[K any, V any]() *MemoryRepo[K, V] {
+	return &MemoryRepo[K, V]{
+		data: make(map[K]V),
+	}
+}
+
+func (r MemoryRepo[K, V]) Save(id K, entity V) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.data[id] = entity
+}
+
+func (r MemoryRepo[K, V]) Get(id K) (V, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	val, ok := r.data[id]
+	if !ok {
+		return nil, ErrNotFound
+	}
+	return val, nil
+}
+
+type User struct {
+	ID   int
+	Name string
+}
+
+func PrintUser(repo Repository[int, User], id int) {
+	u, err := repo.Get(id)
+	if err != nil {
+		fmt.Println("Ошибка: ", err)
+		return
+	}
+	fmt.Printf("Найден: %+v\n", u)
+}
+
+func interfaceGenericsHardTest() {
+	var repo Repository[int, User]
+	repo = *NewMemoryRepo[int, User]()
+
+	repo.Save(1, User{ID: 1, Name: "Alex"})
+	PrintUser(repo, 1)
+	PrintUser(repo, 2)
+}
+
 func RememberingAgain() {
 	//startWorker()
 	//simpleWgWait()
@@ -250,5 +308,6 @@ func RememberingAgain() {
 	//anyTypeExample()
 	//genericExample()
 	//contextExampleAgain()
-	hardTask()
+	//hardTask()
+	interfaceGenericsHardTest()
 }
