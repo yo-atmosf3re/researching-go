@@ -241,47 +241,48 @@ func hardTask() {
 	}
 }
 
-var ErrNotFound = errors.New("not found")
+var ErrNotFound1 = errors.New("not found")
 
-type Repository[K any, V any] interface {
+type Repository[K comparable, V any] interface {
 	Save(id K, entity V)
 	Get(id K) (V, error)
 }
 
-type MemoryRepo[K any, V any] struct {
+type MemoryRepo[K comparable, V any] struct {
 	mu   sync.RWMutex
 	data map[K]V
 }
 
-func NewMemoryRepo[K any, V any]() *MemoryRepo[K, V] {
+func NewMemoryRepo[K comparable, V any]() *MemoryRepo[K, V] {
 	return &MemoryRepo[K, V]{
 		data: make(map[K]V),
 	}
 }
 
-func (r MemoryRepo[K, V]) Save(id K, entity V) {
+func (r *MemoryRepo[K, V]) Save(id K, entity V) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.data[id] = entity
 }
 
-func (r MemoryRepo[K, V]) Get(id K) (V, error) {
+func (r *MemoryRepo[K, V]) Get(id K) (V, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
 	val, ok := r.data[id]
 	if !ok {
-		return nil, ErrNotFound
+		var empty V
+		return empty, ErrNotFound1
 	}
 	return val, nil
 }
 
-type User struct {
+type User1 struct {
 	ID   int
 	Name string
 }
 
-func PrintUser(repo Repository[int, User], id int) {
+func PrintUser(repo Repository[int, User1], id int) {
 	u, err := repo.Get(id)
 	if err != nil {
 		fmt.Println("Ошибка: ", err)
@@ -291,10 +292,10 @@ func PrintUser(repo Repository[int, User], id int) {
 }
 
 func interfaceGenericsHardTest() {
-	var repo Repository[int, User]
-	repo = *NewMemoryRepo[int, User]()
+	var repo Repository[int, User1]
+	repo = NewMemoryRepo[int, User1]()
 
-	repo.Save(1, User{ID: 1, Name: "Alex"})
+	repo.Save(1, User1{ID: 1, Name: "Alex"})
 	PrintUser(repo, 1)
 	PrintUser(repo, 2)
 }
